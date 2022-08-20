@@ -1,4 +1,4 @@
-# Workshop PostgreSQL/PostGIS for beginner
+# Workshop Manage your geospatial data with PostgreSQL/PostGIS
 
 [FOSS4G 2022 Workshop Firenze (Italy)](https://2022.foss4g.org/)
 
@@ -21,6 +21,12 @@
 ![FOSS Academy](img/FOSSAcademy.png)
 
 
+## With support from 
+
+* Hannes Kröger WhereGroup @cartocalypse
+* Enock Seth Nyamador @Enock4seth
+
+
 ## What we learn 
 * Why database?
 * PostgreSQL / PostGIS
@@ -41,6 +47,11 @@ This Workshop uses the brand new OSGeoLive 15 rc1 (https://live.osgeo.org) (Rele
 
 You can download OSGeoLive with the following link. You can install OSGeoLive, run it in a virtual machine (recommended) or use it on an USB stick.
 
+For the conference you can use 15 rc1
+* Download of OSGeoLive Version 15 rc1: http://download.osgeo.org/livedvd/releases/15.0/ (if possible take the vmdk with more programs, else use the iso)
+* Documentation for Version 15 https://osgeo.github.io/OSGeoLive-doc/en/ 
+
+FInal Version 15 will be available in September 2022
 * Download OSGeoLive Image http://live.osgeo.org/en/download.html
 * Documentation https://live.osgeo.org/
 * PostGIS Overview (OSGeoLive Overview) https://live.osgeo.org/en/overview/postgis_overview.html
@@ -49,14 +60,14 @@ You can download OSGeoLive with the following link. You can install OSGeoLive, r
 
 ## Actual Software Versions
 
-* PostgreSQL 13.3 (2022-05-13) https://www.postgresql.org/
-* PostGIS 3.1.2 (2022-05-21) http://www.postgis.org/
+* PostgreSQL 14.5 (2022-08-11) https://www.postgresql.org/
+* PostGIS 3.2.3 (2022-08-18) https://postgis.net/
 
 
 ### OSGeoLive 15.0
 
-* PostgreSQL 12.6
-* PostGIS 3.1.1
+* PostgreSQL 14.4
+* PostGIS 3.2.0
 
 ```sql
 SELECT version(), postgis_version(), postgis_full_version();
@@ -84,6 +95,8 @@ SELECT version(), postgis_version(), postgis_full_version();
 * Postgres OnLine Journal Regine Obe, Leo Hsu http://www.postgresonline.com/
 * Modern SQL Blog Markus Winand https://modern-sql.com/slides https://use-the-index-luke.com/
 * PostgreSQL books https://www.postgresql.org/docs/books/
+* Geomob Podcast - 88. Paul Ramsey: PostGIS turns 20 https://thegeomob.com/podcast/episode-88
+* PostGIS at 20, The Beginning Paul Ramsey: http://blog.cleverelephant.ca/2021/05/postgis-20-years.html
 * FOSSGIS 2021 20 Jahre PostGIS - dazu 20 hilfreiche Tipps zu PostGIS und Neuigkeiten rund um das Projekt (Astrid Emde, german) https://pretalx.com/fossgis2021/talk/NL3FAN/
 * FOSSGIS 2020 Verbindungen schaffen mit PostgreSQL Foreign Data Wrappern (Astrid Emde, german) https://pretalx.com/fossgis2020/talk/ZP3JZZ/
 * pgRouting: A Practical Guide (Mai 2017, 2. Auflage) Regine Obe, Leo Hsu ISBN: 9780989421737
@@ -131,8 +144,6 @@ PostGIS turned 20 on 21. May 2021!
 
 ![](img/elephant_confetti.png)
 
-* Geomob Podcast - 88. Paul Ramsey: PostGIS turns 20 https://thegeomob.com/podcast/episode-88
-* PostGIS at 20, The Beginning Paul Ramsey: http://blog.cleverelephant.ca/2021/05/postgis-20-years.html
 
 
 Do not miss PostGIS day!
@@ -424,7 +435,7 @@ Note: It is so easy to create tables in your database without using SQL.
 ## Get to know PostGIS functions
 
 * PostGIS Documentation http://postgis.net/docs/
-* PostGIS Vector Functions see Chapter 5: http://postgis.net/docs/reference.html
+* PostGIS Vector Functions see Chapter 8: http://postgis.net/docs/reference.html
 
 
 ### Geometry Constructors
@@ -520,7 +531,7 @@ SELECT c.gid,
     AND p.gid = c.gid
 ```
 
-* get back to your cities table from **_Excercise 4_**. Calculate the distance between Buenos Aires and your home town.
+* get back to your cities table from **_Excercise 4_**. Calculate the distance between Firenze and your home town.
 * use the spheroid for your calculations (use geography)
 * https://postgis.net/docs/ST_Distance.html
 
@@ -529,11 +540,11 @@ SELECT g.name, you.name, ST_Distance(g.geom, you.geom, true)
   FROM cities g, 
   cities you 
   WHERE 
-    g.name = 'Buenos Aires' 
+    g.name = 'Firenze' 
     AND you.name='Cologne';
 ```
 
-* Question: Who would have had the longest distance to travel if the conference would have taken place in Buenos Aires and not Online?
+* Question: Who had the longest distance to travel to Firenze?
 
 ![](img/st_distance.png)
 
@@ -634,7 +645,7 @@ SELECT gid, name, admin, geom,
   ORDER BY area DESC;
 ```
 
-![](img/italy_provinces.png)
+![](img/provinces.png)
 
 Step 2: Union all provinces from Italy via ST_UNION
 
@@ -791,7 +802,7 @@ Then you can access the tables from the foreign database easily.
 1. create a foreign server to osm_local
 1. create a user mapping for user **_user_**
 1. Import all tables except spatial_ref_sys, geometry_columns, geography_columns
-1. find out which bars/pubs are close to the Sculpture Floralis Genérica (see your table cities)  
+1. find out which bars/pubs are close to the Firenze Cathedral (see your table cities)  
 
 Step 1-4: 
 
@@ -812,44 +823,44 @@ IMPORT FOREIGN SCHEMA public
     INTO public;
 ```
 
-Use KNN (K nearest neighbor) to find the 5 closest pubs/bars from the Sculpture Floralis Genérica (see table cities)  
+Use KNN (K nearest neighbor) to find the 5 closest pubs/bars from the Firenze Cathedral (see table cities)  
 
 ```sql  
 CREATE VIEW qry_next_5_bars as   
-SELECT p.osm_id, p.name, p.amenity, p.way as geom, 
+SELECT p.osm_id, p.name, p.amenity, p.way as geom 
  FROM cities c,
  planet_osm_point p
   WHERE p.amenity IN ( 'bar' , 'pub')
-   AND c.name = 'Buenos Aires'
+   AND c.name = 'Firenze'
     ORDER BY
     c.geom <-> p.way
     LIMIT 5;
 ```
 
-Use KNN (K nearest neighbor) to find the pubs/bars less then 1 km distance from the Sculpture Floralis Genérica (see table cities)  
+Use KNN (K nearest neighbor) to find the pubs/bars less then 1 km distance from the Firenze Cathedral (see table cities)  
 
 
 ```sql
 CREATE VIEW qry_next_bars_1000 as   
-SELECT p.osm_id, p.name, p.amenity, p.way as geom, 
+SELECT p.osm_id, p.name, p.amenity, p.way as geom 
  st_distance(c.geom, p.way, true)
  FROM cities c,
  planet_osm_point p
   WHERE p.amenity IN ( 'bar' , 'pub')
-   AND c.name = 'Buenos Aires'
+   AND c.name = 'Firenze'
    AND st_distance(c.geom, p.way, true) < 1000
     ORDER BY
     c.geom <-> p.way;
 ```
 
 
-Create the 1 km buffer around the sculture.
+Create the 1 km buffer around the Cathedral.
 
 ```sql
-CREATE view qry_buffer_sculpture_1000 as
+CREATE view qry_buffer_cathedral_1000 as
  SELECT gid, st_buffer(geom::geography,1000)::geometry as geom 
   FROM cities 
-   WHERE name = 'Buenos Aires'
+   WHERE name = 'Firenze'
 ```
 
 
@@ -863,7 +874,7 @@ SELECT p.osm_id, p.way as geom,
  ST_Intersection(p.way, s.geom)::geometry(polygon,4326) geom_intersection
  FROM 
  planet_osm_polygon p,
- qry_buffer_sculpture_1000 s
+ qry_buffer_cathedral_1000 s
   WHERE 
   p.building IS NOT NULL AND
   ST_Intersects(p.way, s.geom)
@@ -908,7 +919,7 @@ Select * from ne_10m_admin_1_states_provinces_shp;
 
 -- this command will return an error. Role robert isn't allowed to modify data.
 SELECT * from ne_10m_admin_1_states_provinces_shp;
-UPDATE ne_10m_admin_1_states_provinces_shp SET name = 'TEST' WHERE name = 'Buenos Aires';
+UPDATE ne_10m_admin_1_states_provinces_shp SET name = 'TEST' WHERE name = 'Toscana';
 
 --ERROR:  permission denied for relation ne_10m_admin_1_states_provinces_shp
 
@@ -918,7 +929,7 @@ GRANT USAGE ON SEQUENCE cities_gid_seq TO workshop_writer;
 -- change to user wilma in pgAdmin
 -- Run the following SQL
 SELECT * from cities;
-UPDATE cities SET name = 'TEST' WHERE name = 'Buenos Aires';
+UPDATE cities SET name = 'TEST' WHERE name = 'Firenze';
 ```
 
 ## What is coming next?
