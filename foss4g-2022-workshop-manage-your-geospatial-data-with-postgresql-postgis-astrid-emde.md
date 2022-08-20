@@ -23,8 +23,8 @@
 
 ## With support from 
 
-* Hannes Kröger WhereGroup @cartocalypse
-* Enock Seth Nyamador @Enock4seth
+* Hannes Kröger WhereGroup [@cartocalypse](https://twitter.com/cartocalypse)
+* Enock Seth Nyamador [@Enock4seth](https://twitter.com/Enock4seth)
 
 
 ## What we learn 
