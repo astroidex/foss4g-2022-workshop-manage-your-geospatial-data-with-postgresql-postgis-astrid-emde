@@ -260,12 +260,14 @@ Notice: Use lower case and no spaces as name for your database, tables columns! 
 
 4. Check whether the postgis functions, **_spatial_ref_sys_** table and the metadata views are there
 
+5. Find informations about projections https://epsg.io/4326 and https://geoawesomeness.com/5-tools-will-let-master-map-projections/
+
 
 ```sql
 CREATE DATABASE foss4g;
 ```
 
-Move to database **__foss4g_** (update the object browser, go to the database foss4g and open a new query editor)
+Move to database **_foss4g_** (update the object browser, go to the database foss4g and open a new query editor)
 
 ```sql
 CREATE EXTENSION postgis;
