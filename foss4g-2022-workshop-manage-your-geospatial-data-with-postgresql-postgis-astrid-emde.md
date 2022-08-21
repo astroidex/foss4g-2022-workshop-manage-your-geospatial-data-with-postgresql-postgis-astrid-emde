@@ -702,8 +702,6 @@ CREATE TABLE provinces_subdivided AS
 ALTER TABLE provinces_subdivided ADD COLUMN gid serial PRIMARY KEY;
 ```
 
-![](img/provinces_st_subdivide.png)
-
 * with definition of max_vertices (default is 256, not < 8)
 
 ```sql
@@ -718,6 +716,7 @@ CREATE TABLE provinces_subdivided AS
 ALTER TABLE provinces_subdivided ADD COLUMN gid serial PRIMARY KEY;
 ```
 
+![](img/provinces_st_subdivide.png)
 
 ```sql
 CREATE INDEX provinces_subdivided_geom_gist
@@ -756,7 +755,7 @@ SELECT name, getCountrynameSubdivided(geom)
  WHERE adm0name = 'Italy';
 ```
 
-![](img/getCountrynameSubdivided.png)
+![](img/explain_analyze.png)
 
 
 ```sql
@@ -862,7 +861,7 @@ Create the 1 km buffer around the Cathedral.
 CREATE view qry_buffer_cathedral_1000 as
  SELECT gid, st_buffer(geom::geography,1000)::geometry as geom 
   FROM cities 
-   WHERE name = 'Firenze'
+   WHERE name = 'Firenze';
 ```
 
 
@@ -873,13 +872,13 @@ CREATE view qry_intersection_buffer_1000_buildings as
 SELECT p.osm_id, p.way as geom, 
  p.name,
  p.building, 
- ST_Intersection(p.way, s.geom)::geometry(polygon,4326) geom_intersection
+ ST_Multi(ST_Intersection(p.way, s.geom))::geometry(multipolygon,4326) geom_intersection
  FROM 
  planet_osm_polygon p,
  qry_buffer_cathedral_1000 s
   WHERE 
   p.building IS NOT NULL AND
-  ST_Intersects(p.way, s.geom)
+  ST_Intersects(p.way, s.geom);
 ```
 
 ![](img/knn_intersection.png)
