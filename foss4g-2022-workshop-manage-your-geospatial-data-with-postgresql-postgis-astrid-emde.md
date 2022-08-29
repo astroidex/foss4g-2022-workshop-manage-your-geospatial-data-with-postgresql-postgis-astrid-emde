@@ -674,7 +674,7 @@ Step 4: Create a view. Assign the geometry type and projection to the new geom, 
 CREATE VIEW qry_italy_union AS
 SELECT ROW_NUMBER() OVER () as gid, 
   admin, 
-  ST_UNION(geom::geometry(multipolygon,4326)) as geom
+  ST_UNION(geom)::geometry(multipolygon,4326) as geom
   FROM public.ne_10m_admin_1_states_provinces_shp 
   WHERE admin='Italy'
   GROUP BY admin ;
